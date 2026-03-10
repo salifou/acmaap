@@ -1,0 +1,14 @@
+- name: Delete service account
+  kubernetes.core.k8s:
+    state: absent
+    definition: |
+      apiVersion: authentication.open-cluster-management.io/v1beta1
+      kind: ManagedServiceAccount
+      metadata:
+        name: "{{ generated_sa_name }}"
+        namespace: "{{ item }}"
+    host: "{{ hub_url }}/local-cluster"
+    api_key: "{{ hub_token }}"
+    validate_certs: false
+#
+# TODO: Check if secret is deleted on the Hub

@@ -1,0 +1,67 @@
+- name: Create the service account
+  kubernetes.core.k8s:
+    definition: |
+      apiVersion: authentication.open-cluster-management.io/v1beta1
+      kind: ManagedServiceAccount
+      metadata:
+        name: {{ generated_sa_name }}
+        namespace: "{{ cluster_name }}"
+      spec:
+        rotation:
+          enabled: true
+          validity: 8640h0m0s
+    host: "{{ hub_url }}/local-cluster"
+    api_key: "{{ hub_token }}"
+    validate_certs: false
+
+- name: Set RBAC on the service account
+  kubernetes.core.k8s:
+    definition: |
+      apiVersion: work.open-cluster-management.io/v1
+      kind: ManifestWork
+      metadata:
+        name: {{ generated_sa_name }}
+        namespace: "{{ cluster_name }}"
+      spec:
+        workload:
+          manifests:
+            - apiVersion: rbac.authorization.k8s.io/v1
+              kind: ClusterRoleBinding
+              metadata:
+                name: cluster-admin-app
+              roleRef:
+                apiGroup: rbac.authorization.k8s.io
+                kind: ClusterRole
+                name: cluster-admin
+              subjects:
+                - kind: ServiceAccount
+                  name: {{ generated_sa_name }}
+                  namespace: open-cluster-management-agent-addon
+    host: "{{ hub_url }}/local-cluster"
+    api_key: "{{ hub_token }}"
+    validate_certs: false
+
+- name: Get the service account token
+  kubernetes.core.k8s_info:
+    kind: Secret
+    name: "{{ generated_sa_name }}"
+    namespace: "{{ cluster_name }}"
+    host: "{{ hub_url }}/local-cluster"
+    api_key: "{{ hub_token }}"
+    validate_certs: false
+  register: __sa_token
+  until: __sa_token is not failed
+  retries: 10
+  delay: 15
+
+- name: Extract and save the token
+  ansible.builtin.set_fact:
+    __clusters_tokens: "{{ __clusters_tokens + [__cluster] }}"
+  vars:
+    __cluster:
+      cluster_name: "{{ cluster_name }}"
+      token: "{{ __sa_token.resources[0].data.token | b64decode }}"
+#
+# - name: Debug tokens
+#   ansible.builtin.debug:
+#     var: __clusters_tokens

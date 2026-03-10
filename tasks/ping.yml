@@ -1,0 +1,33 @@
+- name: Ping cluster {{ cluster_name }}
+  ansible.builtin.ping:
+# - name: Set cluster connection vars
+#   ansible.builtin.set_fact:
+#     __server: "{{ hub_url }}/{{ cluster_name }}"
+#     __token: "{{ __clusters_tokens | selectattr('cluster_name', '==', cluster_name) | map(attribute='token') | first }}"
+
+# # https://access.redhat.com/support/cases/#/case/04391673
+# - name: Run SA count per SCC script - cluster {{ cluster_name }}
+#   ansible.builtin.shell: |
+#     set -o pipefail
+
+#     oc login --token={{ __token }} --server={{ __server }} > /dev/null
+
+#     SCC_LIST="restricted privileged restricted-v2 node-exporter nonroot-v2 anyuid hostnetwork nonroot hostnetwork-v2 hostaccess hostmount-anyuid"
+#     echo "Service Account count per SCC:"
+#     echo "------------------------------"
+#     for scc in $SCC_LIST; do
+#       # Check if the SCC exists on the cluster to avoid errors
+#       if oc get scc "$scc" >/dev/null 2>&1; then
+#       # Run 'who-can' with a space between 'scc' and the variable '$scc'
+#       COUNT=$(oc adm policy who-can use scc "$scc" | grep -o "system:serviceaccount:[^ ]*" | sort -u | wc -l)
+#       echo "$scc: $COUNT"
+#     else
+#       echo "$scc: Not found on this cluster"
+#     fi
+#     done
+#   changed_when: false
+#   register: __script_output
+
+# - name: Print SA count per SCC - cluster {{ cluster_name }}
+#   ansible.builtin.debug:
+#     msg: "{{ __script_output.stdout_lines }}"
