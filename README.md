@@ -65,6 +65,82 @@ ansible-navigator -m stdout \
   run playbook.yml 
 ```
 
+Output
+
+```sh
+PLAY [Execute logic across all managed clusters] ********************************************************
+
+TASK [Gathering Facts] **********************************************************************************
+ok: [localhost]
+
+TASK [Assert that hub_url and hub_token vars are defined] ***********************************************
+ok: [localhost]
+
+TASK [Managed Cluster List Retrieval Tasks] *************************************************************
+included: /home/ssidimah/projects/ocp/acm/acm_aap/tasks/managed_cluster_list_retrieval.yml for localhost
+
+TASK [Get the list of managed cluster namespaces] *******************************************************
+ok: [localhost]
+
+TASK [Save the list of managed clusters, excluding the Hub (local-cluster)] *****************************
+ok: [localhost]
+
+TASK [K8S Tokens Generation Tasks] **********************************************************************
+included: /home/ssidimah/projects/ocp/acm/acm_aap/tasks/k8s_tokens_generation.yml for localhost => (item=cluster)
+
+TASK [Create the service account (ManagedServiceAccount) - cluster cluster] *****************************
+changed: [localhost]
+
+TASK [Set RBAC on the service account (ManifestWork) - cluster cluster] *********************************
+changed: [localhost]
+
+TASK [Retrieve the token - cluster cluster] *************************************************************
+ok: [localhost]
+
+TASK [Save the token - cluster cluster] *****************************************************************
+ok: [localhost]
+
+TASK [Logic Execution Tasks] ****************************************************************************
+included: /home/ssidimah/projects/ocp/acm/acm_aap/tasks/logic/sa_count_per_scc.yml for localhost => (item=cluster)
+
+TASK [Set cluster connection vars - cluster cluster] ****************************************************
+ok: [localhost]
+
+TASK [Run SA count per SCC script - cluster cluster] ****************************************************
+ok: [localhost]
+
+TASK [Print SA count per SCC output - cluster cluster] **************************************************
+ok: [localhost] => {
+    "msg": [
+        "Service Account count per SCC:",
+        "------------------------------",
+        "restricted: 33",
+        "privileged: 38",
+        "restricted-v2: 32",
+        "node-exporter: 33",
+        "nonroot-v2: 32",
+        "anyuid: 33",
+        "hostnetwork: 34",
+        "nonroot: 34",
+        "hostnetwork-v2: 31",
+        "hostaccess: 31",
+        "hostmount-anyuid: 31"
+    ]
+}
+
+TASK [Cleanup Tasks] ************************************************************************************
+included: /home/ssidimah/projects/ocp/acm/acm_aap/tasks/cleanup.yml for localhost => (item=cluster)
+
+TASK [Delete ManagedServiceAccount - cluster cluster] ***************************************************
+changed: [localhost]
+
+TASK [Delete ManifestWork - cluster cluster] ************************************************************
+changed: [localhost]
+
+PLAY RECAP **********************************************************************************************
+localhost                  : ok=17   changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0  
+```
+
 ## Links
 
 - [Multicluster authentication with Ansible Automation Platform](https://developers.redhat.com/articles/2025/09/08/multicluster-authentication-ansible-automation-platform#)
