@@ -1,0 +1,62 @@
+# Create the following resources
+# - aap-integration namespace
+# - aap-sa service account
+# - aap-integration-serviceaccount-role cluster role
+# - aap-integration-serviceaccount-rb cluster role binding attached to aap-sa
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aap-integration
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: aap-sa
+  namespace: aap-integration
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: aap-integration-serviceaccount-role
+rules:
+  - verbs:
+      - get
+      - list
+      - watch
+    apiGroups:
+      - ""
+    resources:
+      - secrets # Needed to retrieve secret containing token to connect to managed clusters
+      - namespaces # Needed to terieve list of managed namespace. TODO: replace with ManagedCluster
+  - verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+    apiGroups:
+      - authentication.open-cluster-management.io
+      - work.open-cluster-management.io
+    resources:
+      - managedserviceaccounts
+      - manifestworks
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: aap-integration-serviceaccount-rb
+subjects:
+  - kind: ServiceAccount
+    name: aap-sa
+    namespace: aap-integration
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: aap-integration-serviceaccount-role

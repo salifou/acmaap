@@ -25,3 +25,7 @@
         | reject('equalto', 'local-cluster')
         | list
       }}
+
+# TODO: Refactor to retrieve list of the following
+# apiVersion: cluster.open-cluster-management.io/v1
+# kind: ManagedCluster
