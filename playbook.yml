@@ -1,39 +1,36 @@
 ---
-- name: Run tasks on all managed cluster
+- name: Execute logic across all managed clusters
   hosts: localhost
-  # vars_files:
-  #   - ./vars.yml
   vars:
     generated_sa_name: "{{ aap_sa_name | default('aap-sa') }}"
-    clusters: "{{ clsuters | default(['cluster']) }}"
   tasks:
-    - name: Assert that hub_url, hub_token and clusters are defined
+    - name: Assert that hub_url and hub_token vars are defined
       ansible.builtin.assert:
         that:
           - hub_url is defined
           - hub_token is defined
-          - clusters is defined and clusters is iterable
         quiet: true
 
-    - name: Create __clusters_tokens array
-      ansible.builtin.set_fact:
-        __clusters_tokens: []
+    - name: Managed Cluster List Retrieval Tasks
+      ansible.builtin.include_tasks: ./tasks/managed_cluster_list_retrieval.yml
 
-    - name: Logic block
+    - name: Logic Block
+      when: clusters | length > 0
       block:
-        - name: Generate token for each cluster
-          ansible.builtin.include_tasks: ./tasks/create_sa.yml
+        - name: K8S Tokens Generation Tasks
+          ansible.builtin.include_tasks: ./tasks/k8s_tokens_generation.yml
           loop: "{{ clusters }}"
           vars:
             cluster_name: "{{ item }}"
 
-        - name: Execute logic on each managed cluster
-          ansible.builtin.include_tasks: ./tasks/sa_count_per_scc.yml
+        - name: Logic Execution Tasks
+          ansible.builtin.include_tasks: ./tasks/logic/sa_count_per_scc.yml
           loop: "{{ clusters }}"
           vars:
             cluster_name: "{{ item }}"
-
       always:
-        - name: Cleanup each cluster
+        - name: Cleanup Tasks
           ansible.builtin.include_tasks: ./tasks/cleanup.yml
           loop: "{{ clusters }}"
+          vars:
+            cluster_name: "{{ item }}"

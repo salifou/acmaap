@@ -1,4 +1,4 @@
-- name: Set cluster connection vars
+- name: Set cluster connection vars - cluster {{ cluster_name }}
   ansible.builtin.set_fact:
     __server: "{{ hub_url }}/{{ cluster_name }}"
     __token: "{{ __clusters_tokens | selectattr('cluster_name', '==', cluster_name) | map(attribute='token') | first }}"

@@ -1,4 +1,4 @@
-- name: Create the service account
+- name: Create the service account (ManagedServiceAccount) - cluster {{ cluster_name }}
   kubernetes.core.k8s:
     definition: |
       apiVersion: authentication.open-cluster-management.io/v1beta1
@@ -14,7 +14,7 @@
     api_key: "{{ hub_token }}"
     validate_certs: false
 
-- name: Set RBAC on the service account
+- name: Set RBAC on the service account (ManifestWork) - cluster {{ cluster_name }}
   kubernetes.core.k8s:
     definition: |
       apiVersion: work.open-cluster-management.io/v1
@@ -41,7 +41,7 @@
     api_key: "{{ hub_token }}"
     validate_certs: false
 
-- name: Get the service account token
+- name: Retrieve the token - cluster {{ cluster_name }}
   kubernetes.core.k8s_info:
     kind: Secret
     name: "{{ generated_sa_name }}"
@@ -54,14 +54,14 @@
   retries: 10
   delay: 15
 
-- name: Extract and save the token
+- name: Save the token - cluster {{ cluster_name }}
   ansible.builtin.set_fact:
-    __clusters_tokens: "{{ __clusters_tokens + [__cluster] }}"
+    __clusters_tokens: "{{ __clusters_tokens | default([]) + [__cluster] }}"
   vars:
     __cluster:
       cluster_name: "{{ cluster_name }}"
       token: "{{ __sa_token.resources[0].data.token | b64decode }}"
 #
-# - name: Debug tokens
+# - name: Debug tokens - cluster {{ cluster_name }}
 #   ansible.builtin.debug:
 #     var: __clusters_tokens

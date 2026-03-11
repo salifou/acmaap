@@ -1,4 +1,4 @@
-- name: Delete service account
+- name: Delete ManagedServiceAccount - cluster {{ cluster_name }}
   kubernetes.core.k8s:
     state: absent
     definition: |
@@ -6,9 +6,20 @@
       kind: ManagedServiceAccount
       metadata:
         name: "{{ generated_sa_name }}"
-        namespace: "{{ item }}"
+        namespace: "{{ cluster_name }}"
     host: "{{ hub_url }}/local-cluster"
     api_key: "{{ hub_token }}"
     validate_certs: false
-#
-# TODO: Check if secret is deleted on the Hub
+
+- name: Delete ManifestWork - cluster {{ cluster_name }}
+  kubernetes.core.k8s:
+    state: absent
+    definition: |
+      apiVersion: work.open-cluster-management.io/v1
+      kind: ManifestWork
+      metadata:
+        name: "{{ generated_sa_name }}"
+        namespace: "{{ cluster_name }}"
+    host: "{{ hub_url }}/local-cluster"
+    api_key: "{{ hub_token }}"
+    validate_certs: false
