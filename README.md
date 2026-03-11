@@ -149,7 +149,7 @@ localhost                  : ok=17   changed=4    unreachable=0    failed=0    s
 4. Create the Job Template
 5. Run the Job Template
 
-1. Create a Credential Type
+### 1. Create the Credential Type
 
 Input Configuration
 ```yaml
@@ -180,19 +180,19 @@ extra_vars:
 
 ![alt text](img/credential-type.png)
 
-2. Create the Credential
+### 2. Create the Credential
 
 ![alt text](img/credential.png)
 
-3. Create the Project
+### 3. Create the Project
 
 ![alt text](img/project.png)
 
-4. Create the Job Template
+### 4. Create the Job Template
 
 ![alt text](img/jt.png)
 
-5. Run the Job Template
+### 5. Run the Job Template
 
 ![alt text](img/jt-output.png)
 
