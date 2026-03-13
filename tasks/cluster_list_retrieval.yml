@@ -1,0 +1,34 @@
+- name: Get the list of managed clusters
+  kubernetes.core.k8s_info:
+    api_version: cluster.open-cluster-management.io/v1
+    kind: ManagedCluster
+    host: "{{ hub_url }}/local-cluster"
+    api_key: "{{ hub_token }}"
+    validate_certs: false
+  register: __managed_clusters_raw
+
+#
+# accepted: true if managed cluster accepted by the hub.
+#
+- name: Save the list of managed clusters
+  ansible.builtin.set_fact:
+    clusters: >
+      {{
+        clusters + [{
+          'name' : item.metadata.name,
+          'url' : item.spec.managedClusterClientConfigs[0].url,
+          'accepted' : item.spec.hubAcceptsClient | default(false),
+          'local' : item.metadata.labels['local-cluster'] | default(false) | bool,
+          'vendor' : item.metadata.labels.vendor | default('unknown'),
+          'cloud' : item.metadata.labels.cloud | default('unknown'),
+          'id' : item.metadata.labels.clusterID | default('unknown'),
+          'openshiftVersion' : item.metadata.labels.openshiftVersion | default(omit),
+          'cluster_proxy_addon_available' : item.metadata.labels['feature.open-cluster-management.io/addon-cluster-proxy'] == 'available',
+          'managed_serviceaccount_addon_available' : item.metadata.labels['feature.open-cluster-management.io/addon-managed-serviceaccount'] == 'available',
+        }]
+      }}
+  loop: "{{ __managed_clusters_raw.resources | default([]) }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+  vars:
+    clusters: []

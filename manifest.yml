@@ -31,7 +31,13 @@ rules:
       - ""
     resources:
       - secrets # Needed to retrieve secret containing token to connect to managed clusters
-      - namespaces # Needed to terieve list of managed namespace. TODO: replace with ManagedCluster
+  - verbs:
+      - get
+      - list
+    apiGroups:
+      - cluster.open-cluster-management.io
+    resources:
+      - managedclusters
   - verbs:
       - get
       - list

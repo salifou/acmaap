@@ -1,10 +1,10 @@
-- name: Set cluster connection vars - cluster {{ cluster_name }}
+- name: Set cluster connection vars - cluster {{ cluster.name }}
   ansible.builtin.set_fact:
-    __server: "{{ hub_url }}/{{ cluster_name }}"
-    __token: "{{ __clusters_tokens | selectattr('cluster_name', '==', cluster_name) | map(attribute='token') | first }}"
+    __server: "{{ hub_url }}/{{ cluster.name }}"
+    __token: "{{ cluster_token_list | selectattr('name', '==', cluster.name) | map(attribute='token') | first }}"
 
 # https://access.redhat.com/support/cases/#/case/04391673
-- name: Run SA count per SCC script - cluster {{ cluster_name }}
+- name: Run SA count per SCC script - cluster {{ cluster.name }}
   ansible.builtin.shell: |
     set -o pipefail
 
@@ -26,6 +26,6 @@
   changed_when: false
   register: __script_output
 
-- name: Print SA count per SCC output - cluster {{ cluster_name }}
+- name: Print SA count per SCC output - cluster {{ cluster.name }}
   ansible.builtin.debug:
     msg: "{{ __script_output.stdout_lines }}"

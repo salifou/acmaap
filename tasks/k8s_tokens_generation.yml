@@ -1,11 +1,11 @@
-- name: Create the service account (ManagedServiceAccount) - cluster {{ cluster_name }}
+- name: Create the service account (ManagedServiceAccount) - cluster {{ cluster.name }}
   kubernetes.core.k8s:
     definition: |
       apiVersion: authentication.open-cluster-management.io/v1beta1
       kind: ManagedServiceAccount
       metadata:
         name: {{ generated_sa_name }}
-        namespace: "{{ cluster_name }}"
+        namespace: "{{ cluster.name }}"
       spec:
         rotation:
           enabled: true
@@ -14,14 +14,14 @@
     api_key: "{{ hub_token }}"
     validate_certs: false
 
-- name: Set RBAC on the service account (ManifestWork) - cluster {{ cluster_name }}
+- name: Set RBAC on the service account (ManifestWork) - cluster {{ cluster.name }}
   kubernetes.core.k8s:
     definition: |
       apiVersion: work.open-cluster-management.io/v1
       kind: ManifestWork
       metadata:
         name: {{ generated_sa_name }}
-        namespace: "{{ cluster_name }}"
+        namespace: "{{ cluster.name }}"
       spec:
         workload:
           manifests:
@@ -41,11 +41,11 @@
     api_key: "{{ hub_token }}"
     validate_certs: false
 
-- name: Retrieve the token - cluster {{ cluster_name }}
+- name: Retrieve the token - cluster {{ cluster.name }}
   kubernetes.core.k8s_info:
     kind: Secret
     name: "{{ generated_sa_name }}"
-    namespace: "{{ cluster_name }}"
+    namespace: "{{ cluster.name }}"
     host: "{{ hub_url }}/local-cluster"
     api_key: "{{ hub_token }}"
     validate_certs: false
@@ -54,14 +54,10 @@
   retries: 10
   delay: 15
 
-- name: Save the token - cluster {{ cluster_name }}
+- name: Save the token - cluster {{ cluster.name }}
   ansible.builtin.set_fact:
-    __clusters_tokens: "{{ __clusters_tokens | default([]) + [__cluster] }}"
+    cluster_token_list: "{{ cluster_token_list | default([]) + [__cluster] }}"
   vars:
     __cluster:
-      cluster_name: "{{ cluster_name }}"
+      name: "{{ cluster.name }}"
       token: "{{ __sa_token.resources[0].data.token | b64decode }}"
-#
-# - name: Debug tokens - cluster {{ cluster_name }}
-#   ansible.builtin.debug:
-#     var: __clusters_tokens

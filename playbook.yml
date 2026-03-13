@@ -11,26 +11,50 @@
           - hub_token is defined
         quiet: true
 
-    - name: Managed Cluster List Retrieval Tasks
-      ansible.builtin.include_tasks: ./tasks/managed_cluster_list_retrieval.yml
+    - name: Clusters List Retrieval Tasks
+      ansible.builtin.include_tasks: ./tasks/cluster_list_retrieval.yml
+
+    # List of cluster meeting the following
+    # - spoke cluster (exclude hub)
+    # - managed service account and cluster proxy addons enabled
+    # - accepted by the hub cluster
+    # - vendor is OpenShift
+    - name: Set the list of processable clusters
+      ansible.builtin.set_fact:
+        processable_clusters: >
+          {{
+            clusters
+              | rejectattr('local')
+              | selectattr('managed_serviceaccount_addon_available')
+              | selectattr('cluster_proxy_addon_available')
+              | selectattr('accepted')
+              | selectattr('vendor', 'eq', 'OpenShift')
+              | list
+          }}
 
     - name: Logic Block
       when: clusters | length > 0
       block:
-        - name: K8S Tokens Generation Tasks
+        - name: K8s Token Generation Tasks
           ansible.builtin.include_tasks: ./tasks/k8s_tokens_generation.yml
-          loop: "{{ clusters }}"
+          loop: "{{ processable_clusters }}"
+          loop_control:
+            label: "{{ item.name }}"
           vars:
-            cluster_name: "{{ item }}"
+            cluster: "{{ item }}"
 
         - name: Logic Execution Tasks
           ansible.builtin.include_tasks: ./tasks/logic/sa_count_per_scc.yml
-          loop: "{{ clusters }}"
+          loop: "{{ processable_clusters }}"
+          loop_control:
+            label: "{{ item.name }}"
           vars:
-            cluster_name: "{{ item }}"
+            cluster: "{{ item }}"
       always:
         - name: Cleanup Tasks
           ansible.builtin.include_tasks: ./tasks/cleanup.yml
-          loop: "{{ clusters }}"
+          loop: "{{ processable_clusters }}"
+          loop_control:
+            label: "{{ item.name }}"
           vars:
-            cluster_name: "{{ item }}"
+            cluster: "{{ item }}"
