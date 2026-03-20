@@ -1,0 +1,2 @@
+- name: Ping - cluster {{ cluster_name }}
+  ansible.builtin.ping:
