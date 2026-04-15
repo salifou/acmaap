@@ -1,0 +1,76 @@
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  labels:
+    cloud: Amazon
+    cluster.open-cluster-management.io/clusterset: default
+    clusterID: a6bdd117-55b2-415b-8d81-e0591bc0000e
+    environment: prod
+    feature.open-cluster-management.io/addon-application-manager: unhealthy
+    feature.open-cluster-management.io/addon-cert-policy-controller: available
+    feature.open-cluster-management.io/addon-cluster-proxy: available
+    feature.open-cluster-management.io/addon-config-policy-controller: available
+    feature.open-cluster-management.io/addon-governance-policy-framework: available
+    feature.open-cluster-management.io/addon-managed-serviceaccount: available
+    feature.open-cluster-management.io/addon-search-collector: available
+    feature.open-cluster-management.io/addon-work-manager: available
+    name: cluster01
+    openshiftVersion: 4.19.27
+    openshiftVersion-major: "4"
+    openshiftVersion-major-minor: "4.19"
+    region: us-east-1
+    vendor: OpenShift
+  name: cluster01
+  resourceVersion: "2018554"
+  uid: f4372871-6878-4c94-8618-06ef1e3b0657
+spec:
+  hubAcceptsClient: true
+  leaseDurationSeconds: 60
+  managedClusterClientConfigs:
+  - caBundle: XXXX
+    url: https://api.cluster01.sandbox963.opentlc.com:6443
+status:
+  allocatable:
+    cpu: 3500m
+    ephemeral-storage: "95018478229"
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 14746800Ki
+    pods: "250"
+  capacity:
+    core_worker: "4"
+    cpu: "4"
+    ephemeral-storage: 104266732Ki
+    hugepages-1Gi: "0"
+    hugepages-2Mi: "0"
+    memory: 15897776Ki
+    pods: "250"
+    socket_worker: "1"
+  clusterClaims:
+  - name: apiserverurl.openshift.io
+    value: https://api.cluster01.sandbox963.opentlc.com:6443
+  - name: consoleurl.cluster.open-cluster-management.io
+    value: https://console-openshift-console.apps.cluster01.sandbox963.opentlc.com
+  - name: controlplanetopology.openshift.io
+    value: SingleReplica
+  - name: id.k8s.io
+    value: a6bdd117-55b2-415b-8d81-e0591bc0000e
+  - name: id.openshift.io
+    value: a6bdd117-55b2-415b-8d81-e0591bc0000e
+  - name: infrastructure.openshift.io
+    value: '{"infraName":"cluster01-grzfk"}'
+  - name: kubeversion.open-cluster-management.io
+    value: v1.32.13
+  - name: oauthredirecturis.openshift.io
+    value: https://oauth-openshift.apps.cluster01.sandbox963.opentlc.com/oauth/token/implicit
+  - name: platform.open-cluster-management.io
+    value: AWS
+  - name: product.open-cluster-management.io
+    value: OpenShift
+  - name: region.open-cluster-management.io
+    value: us-east-1
+  - name: schedulable.open-cluster-management.io
+    value: "true"
+  - name: version.openshift.io
+    value: 4.19.27
+
