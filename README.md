@@ -49,7 +49,7 @@ HUB_PROXY_URL=$(oc get route -n multicluster-engine cluster-proxy-addon-user -o 
 
 ## Running the playbook
 
-1. Create the vars file
+### 1. Create the vars file
 
 ```sh
 cat <<EOF > vars.yml
@@ -58,7 +58,7 @@ hub_token: $HUB_TOKEN
 EOF
 ```
 
-2. Run the playbook
+### 2. Run the playbook
 
 ```sh
 ansible-navigator -m stdout \
