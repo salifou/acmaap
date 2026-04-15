@@ -29,19 +29,19 @@ This work is inspired by the [Multicluster authentication with Ansible Automatio
 3. Retrieve the proxy base URL for connection to the managed clusters.
 
 
-1. Create K8S resources
+### 1. Create K8S resources
 
 ```sh
 oc apply -f manifest.yml
 ```
 
-2. Retrieve the service account token
+### 2. Retrieve the service account token
 ```sh
 # Long-lived 1 year
 HUB_TOKEN=$(oc create token aap-sa -n aap-integration --duration=8760h)
 ```
 
-3. Retrieve the proxy base URL for connection to managed clusters
+### 3. Retrieve the proxy base URL for connection to managed clusters
 
 ```sh
 HUB_PROXY_URL=$(oc get route -n multicluster-engine cluster-proxy-addon-user -o jsonpath='{.spec.host}')
@@ -49,7 +49,7 @@ HUB_PROXY_URL=$(oc get route -n multicluster-engine cluster-proxy-addon-user -o 
 
 ## Running the playbook
 
-1. Create the vars file
+### 1. Create the vars file
 
 ```sh
 cat <<EOF > vars.yml
@@ -58,7 +58,7 @@ hub_token: $HUB_TOKEN
 EOF
 ```
 
-2. Run the playbook
+### 2. Run the playbook
 
 ```sh
 ansible-navigator -m stdout \
